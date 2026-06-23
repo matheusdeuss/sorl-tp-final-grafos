@@ -4,7 +4,7 @@ namespace SORL.Algoritmos;
 
 public static class ArvoreGeradoraMinima
 {
-    // Kruskal com Union-Find — trata o grafo como não-direcionado
+    // Kruskal
     public static (double custo, List<(int u, int v, double peso)> arestas) Executar(Grafo g)
     {
         // coleta arestas sem duplicar: u->v e v->u representam a mesma aresta não-direcionada
@@ -34,6 +34,9 @@ public static class ArvoreGeradoraMinima
 
         foreach ((double peso, int u, int v) in lista)
         {
+            if (escolhidas.Count == g.V - 1)
+                break;
+
             if (Unir(parent, rank, u, v))
             {
                 escolhidas.Add((u, v, peso));

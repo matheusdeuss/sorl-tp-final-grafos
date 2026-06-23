@@ -56,33 +56,45 @@ public static class Coloracao
         for (int i = 0; i < m; i++)
             cor[i] = -1;
 
-        int maxCor = 0;
+        int corAtual = 0;
+        int coloridos = 0;
 
-        foreach (int i in ordem)
+        // Passo 3-5: para cada cor, percorre a lista e atribui a cor a todos os
+        // vértices não conectados a um vértice já colorido com essa mesma cor
+        while (coloridos < m)
         {
-            // coleta as cores já usadas pelos vizinhos coloridos
-            HashSet<int> coresUsadas = new HashSet<int>();
-            foreach (int vizinho in adjLinha[i])
+            HashSet<int> coloridosNestaRodada = [];
+
+            foreach (int i in ordem)
             {
-                if (cor[vizinho] != -1)
-                    coresUsadas.Add(cor[vizinho]);
+                if (cor[i] != -1)
+                    continue;
+
+                bool conflito = false;
+                foreach (int viz in adjLinha[i])
+                {
+                    if (coloridosNestaRodada.Contains(viz))
+                    {
+                        conflito = true;
+                        break;
+                    }
+                }
+
+                if (!conflito)
+                {
+                    cor[i] = corAtual;
+                    coloridosNestaRodada.Add(i);
+                    coloridos++;
+                }
             }
 
-            // atribui a menor cor disponível
-            int c = 0;
-            while (coresUsadas.Contains(c))
-                c++;
-
-            cor[i] = c;
-
-            if (c + 1 > maxCor)
-                maxCor = c + 1;
+            corAtual++;
         }
 
-        Dictionary<int, int> resultado = new Dictionary<int, int>();
+        Dictionary<int, int> resultado = new();
         for (int i = 0; i < m; i++)
             resultado[i] = cor[i];
 
-        return (maxCor, resultado);
+        return (corAtual, resultado);
     }
 }

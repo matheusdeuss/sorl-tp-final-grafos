@@ -22,7 +22,7 @@ public static class FluxoMaximo
                 pai[i] = -1;
             pai[s] = s;
 
-            Queue<int> fila = new Queue<int>();
+            Queue<int> fila = new();
             fila.Enqueue(s);
 
             while (fila.Count > 0 && pai[t] == -1)
@@ -64,7 +64,7 @@ public static class FluxoMaximo
 
         // BFS no grafo residual para encontrar o corte mínimo
         bool[] alcancavel = new bool[n];
-        Queue<int> filaCorte = new Queue<int>();
+        Queue<int> filaCorte = new();
         filaCorte.Enqueue(s);
         alcancavel[s] = true;
 
@@ -81,7 +81,7 @@ public static class FluxoMaximo
             }
         }
 
-        List<(int, int)> corte = new List<(int, int)>();
+        List<(int, int)> corte = new();
         foreach (Aresta a in g.TodasArestas())
         {
             if (alcancavel[a.Origem] && !alcancavel[a.Destino])

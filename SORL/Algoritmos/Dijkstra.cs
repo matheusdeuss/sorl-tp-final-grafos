@@ -7,39 +7,57 @@ public static class Dijkstra
     public static (double custo, List<int> caminho) Executar(Grafo g, int s, int t)
     {
         double[] dist = new double[g.V];
-        int[] prev = new int[g.V];
-        bool[] visitado = new bool[g.V];
+        int[] pred = new int[g.V];
+        bool[] explorado = new bool[g.V];
 
+        // Passo 1: inicializar distâncias e predecessores
         for (int i = 0; i < g.V; i++)
         {
             dist[i] = double.PositiveInfinity;
-            prev[i] = -1;
-            visitado[i] = false;
+            pred[i] = -1;
         }
 
+        // Passo 2-3: inserir raiz no conjunto S e definir dist[s] = 0
         dist[s] = 0;
+        explorado[s] = true;
+        Queue<int> S = new();
+        S.Enqueue(s);
 
-        PriorityQueue<int, double> fila = new PriorityQueue<int, double>();
-        fila.Enqueue(s, 0);
-
-        while (fila.Count > 0)
+        // Passo 4: repetir |V| - 1 vezes
+        for (int i = 0; i < g.V - 1; i++)
         {
-            fila.TryDequeue(out int u, out double _);
+            // Passo 4a: encontrar aresta (v, w) no corte(S) com dist[v] + d(v,w) mínimo
+            int melhorV = -1;
+            int melhorW = -1;
+            double menorDist = double.PositiveInfinity;
 
-            if (visitado[u])
-                continue;
-            visitado[u] = true;
-
-            foreach (Aresta a in g.Vizinhos(u))
+            foreach (int v in S)
             {
-                double novaDist = dist[u] + a.Peso;
-                if (novaDist < dist[a.Destino])
+                foreach (Aresta a in g.Vizinhos(v))
                 {
-                    dist[a.Destino] = novaDist;
-                    prev[a.Destino] = u;
-                    fila.Enqueue(a.Destino, novaDist);
+                    if (!explorado[a.Destino])
+                    {
+                        double candidato = dist[v] + a.Peso;
+                        if (candidato < menorDist)
+                        {
+                            menorDist = candidato;
+                            melhorV = v;
+                            melhorW = a.Destino;
+                        }
+                    }
                 }
             }
+
+            if (melhorW == -1)
+                break; // grafo desconexo, nenhuma aresta de corte disponível
+
+            // Passo 4b: atualizar distância e predecessor de w
+            dist[melhorW] = menorDist;
+            pred[melhorW] = melhorV;
+
+            // Passo 4c: adicionar w ao conjunto S
+            explorado[melhorW] = true;
+            S.Enqueue(melhorW);
         }
 
         if (double.IsInfinity(dist[t]))
@@ -50,7 +68,7 @@ public static class Dijkstra
         while (atual != -1)
         {
             caminho.Add(atual);
-            atual = prev[atual];
+            atual = pred[atual];
         }
         caminho.Reverse();
 
